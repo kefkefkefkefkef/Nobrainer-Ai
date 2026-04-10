@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>NoBrainer AI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+    input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #22c55e;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      background: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>NoBrainer</h1>
+    <p>Stop met kiezen. Laat AI beslissen.</p>
+
+    <input id="question" placeholder="Wat moet ik doen / eten / kijken?" />
+    <button onclick="decide()">Decide</button>
+
+    <div id="output" class="result" style="display:none;"></div>
+  </div>
+
+  <script>
+    function decide() {
+      const input = document.getElementById("question").value.toLowerCase();
+      const output = document.getElementById("output");
+
+      let decision = "";
+      let why = "";
+
+      if (input.includes("eten")) {
+        decision = "Pasta met kip en groenten";
+        why = "Het is simpel, lekker en snel klaar.";
+      } else if (input.includes("kijken")) {
+        decision = "Een korte comedy aflevering";
+        why = "Het ontspant zonder dat je hoeft na te denken.";
+      } else if (input.includes("doen")) {
+        decision = "Ga 30 minuten wandelen";
+        why = "Het geeft energie en kost geen planning.";
+      } else {
+        decision = "Drink een glas water en begin met iets kleins";
+        why = "Actie zorgt voor momentum.";
+      }
+
+      output.style.display = "block";
+      output.innerHTML = `
+        <strong>DECISION:</strong><br>${decision}<br><br>
+        <strong>WHY:</strong><br>${why}
+      `;
+    }
+  </script>
+</body>
+</html>

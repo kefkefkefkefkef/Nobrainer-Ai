@@ -1,89 +1,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>NoBrainer AI</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .container {
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 10px;
-      font-size: 16px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background: #22c55e;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .result {
-      margin-top: 20px;
-      background: #1e293b;
-      padding: 15px;
-      border-radius: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoBrainer Guru</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at top, #1e293b, #020617);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 90%;
+  max-width: 420px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 30px;
+}
+
+.subtitle {
+  opacity: 0.6;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+select, .mode {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  border: none;
+}
+
+.mode {
+  display: flex;
+  gap: 5px;
+}
+
+.mode button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.active {
+  background: #22c55e;
+  color: black;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.main-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(30,41,59,0.8);
+  backdrop-filter: blur(10px);
+  text-align: left;
+  animation: fade 0.4s ease;
+}
+
+@keyframes fade {
+  from {opacity:0; transform: translateY(10px);}
+  to {opacity:1;}
+}
+
+.loader {
+  margin-top: 20px;
+  opacity: 0.6;
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <h1>NoBrainer</h1>
-    <p>Stop met kiezen. Laat AI beslissen.</p>
 
-    <input id="question" placeholder="Wat moet ik doen / eten / kijken?" />
-    <button onclick="decide()">Decide</button>
+<div class="container">
+  <h1>NoBrainer</h1>
+  <div class="subtitle">Your decision guru</div>
 
-    <div id="output" class="result" style="display:none;"></div>
+  <select id="lang">
+    <option value="en">English</option>
+    <option value="nl">Nederlands</option>
+    <option value="es">Español</option>
+    <option value="fr">Français</option>
+    <option value="de">Deutsch</option>
+  </select>
+
+  <div class="mode">
+    <button onclick="setMode('calm')" class="active" id="calm">Calm</button>
+    <button onclick="setMode('strict')" id="strict">Strict</button>
+    <button onclick="setMode('savage')" id="savage">Savage</button>
   </div>
 
-  <script>
-    function decide() {
-      const input = document.getElementById("question").value.toLowerCase();
-      const output = document.getElementById("output");
+  <input id="question" placeholder="What should I do?" />
+  <button class="main-btn" onclick="decide()">Decide</button>
 
-      let decision = "";
-      let why = "";
+  <div id="loading" class="loader" style="display:none;">Thinking...</div>
+  <div id="output" class="result" style="display:none;"></div>
+</div>
 
-      if (input.includes("eten")) {
-        decision = "Pasta met kip en groenten";
-        why = "Het is simpel, lekker en snel klaar.";
-      } else if (input.includes("kijken")) {
-        decision = "Een korte comedy aflevering";
-        why = "Het ontspant zonder dat je hoeft na te denken.";
-      } else if (input.includes("doen")) {
-        decision = "Ga 30 minuten wandelen";
-        why = "Het geeft energie en kost geen planning.";
-      } else {
-        decision = "Drink een glas water en begin met iets kleins";
-        why = "Actie zorgt voor momentum.";
-      }
+<script>
+let mode = "calm";
 
-      output.style.display = "block";
-      output.innerHTML = `
-        <strong>DECISION:</strong><br>${decision}<br><br>
-        <strong>WHY:</strong><br>${why}
-      `;
-    }
-  </script>
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll(".mode button").forEach(b => b.classList.remove("active"));
+  document.getElementById(m).classList.add("active");
+}
+
+const answers = {
+  calm: [
+    ["Go for a walk", "It will clear your mind."],
+    ["Eat something light", "Your body needs fuel."],
+    ["Watch something easy", "Relax without effort."]
+  ],
+  strict: [
+    ["Go work out", "Stop avoiding it."],
+    ["Eat healthy", "You already know this."],
+    ["Do the task now", "No excuses."]
+  ],
+  savage: [
+    ["Flip a coin and move on", "Your overthinking is the problem."],
+    ["Just start", "Nobody cares, just do it."],
+    ["Drink water", "You're probably dehydrated and dramatic."]
+  ]
+};
+
+function decide() {
+  const output = document.getElementById("output");
+  const loading = document.getElementById("loading");
+
+  output.style.display = "none";
+  loading.style.display = "block";
+
+  setTimeout(() => {
+    const pool = answers[mode];
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+
+    loading.style.display = "none";
+    output.style.display = "block";
+
+    output.innerHTML = `
+      <strong>${pick[0]}</strong><br><br>
+      ${pick[1]}
+    `;
+  }, 800);
+}
+</script>
+
 </body>
 </html>

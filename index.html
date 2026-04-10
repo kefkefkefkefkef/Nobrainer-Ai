@@ -8,7 +8,7 @@
 <style>
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, sans-serif;
   background: radial-gradient(circle at top, #1e293b, #020617);
   color: white;
   display: flex;
@@ -23,9 +23,7 @@ body {
   text-align: center;
 }
 
-h1 {
-  font-size: 30px;
-}
+h1 { font-size: 28px; }
 
 .subtitle {
   opacity: 0.6;
@@ -33,34 +31,7 @@ h1 {
   margin-bottom: 20px;
 }
 
-select, .mode {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  border: none;
-}
-
-.mode {
-  display: flex;
-  gap: 5px;
-}
-
-.mode button {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.active {
-  background: #22c55e;
-  color: black;
-  font-weight: bold;
-}
-
-input {
+select, input, button {
   width: 100%;
   padding: 14px;
   border-radius: 10px;
@@ -69,11 +40,7 @@ input {
   font-size: 16px;
 }
 
-.main-btn {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
+button {
   background: linear-gradient(135deg, #22c55e, #4ade80);
   color: black;
   font-weight: bold;
@@ -87,16 +54,10 @@ input {
   background: rgba(30,41,59,0.8);
   backdrop-filter: blur(10px);
   text-align: left;
-  animation: fade 0.4s ease;
-}
-
-@keyframes fade {
-  from {opacity:0; transform: translateY(10px);}
-  to {opacity:1;}
 }
 
 .loader {
-  margin-top: 20px;
+  margin-top: 15px;
   opacity: 0.6;
 }
 </style>
@@ -106,7 +67,7 @@ input {
 
 <div class="container">
   <h1>NoBrainer</h1>
-  <div class="subtitle">Your decision guru</div>
+  <div class="subtitle" id="subtitle">Your decision guru</div>
 
   <select id="lang">
     <option value="en">English</option>
@@ -116,47 +77,17 @@ input {
     <option value="de">Deutsch</option>
   </select>
 
-  <div class="mode">
-    <button onclick="setMode('calm')" class="active" id="calm">Calm</button>
-    <button onclick="setMode('strict')" id="strict">Strict</button>
-    <button onclick="setMode('savage')" id="savage">Savage</button>
-  </div>
-
   <input id="question" placeholder="What should I do?" />
-  <button class="main-btn" onclick="decide()">Decide</button>
+  <button onclick="decide()">Decide</button>
 
   <div id="loading" class="loader" style="display:none;">Thinking...</div>
   <div id="output" class="result" style="display:none;"></div>
 </div>
 
 <script>
-let mode = "calm";
-
-function setMode(m) {
-  mode = m;
-  document.querySelectorAll(".mode button").forEach(b => b.classList.remove("active"));
-  document.getElementById(m).classList.add("active");
-}
-
-const answers = {
-  calm: [
-    ["Go for a walk", "It will clear your mind."],
-    ["Eat something light", "Your body needs fuel."],
-    ["Watch something easy", "Relax without effort."]
-  ],
-  strict: [
-    ["Go work out", "Stop avoiding it."],
-    ["Eat healthy", "You already know this."],
-    ["Do the task now", "No excuses."]
-  ],
-  savage: [
-    ["Flip a coin and move on", "Your overthinking is the problem."],
-    ["Just start", "Nobody cares, just do it."],
-    ["Drink water", "You're probably dehydrated and dramatic."]
-  ]
-};
-
 function decide() {
+  const input = document.getElementById("question").value.toLowerCase();
+  const lang = document.getElementById("lang").value;
   const output = document.getElementById("output");
   const loading = document.getElementById("loading");
 
@@ -164,17 +95,72 @@ function decide() {
   loading.style.display = "block";
 
   setTimeout(() => {
-    const pool = answers[mode];
-    const pick = pool[Math.floor(Math.random() * pool.length)];
+
+    let decision = "";
+    let why = "";
+
+    // 🔍 Context detection
+    if (input.includes("emigrate") || input.includes("verhuizen") || input.includes("move country")) {
+      decision = {
+        en: "Move, but test it first",
+        nl: "Verhuis, maar test het eerst",
+        es: "Muévete, pero pruébalo primero",
+        fr: "Déménage, mais teste d'abord",
+        de: "Zieh um, aber teste es zuerst"
+      }[lang];
+
+      why = {
+        en: "Commitment without testing is risky. Try before going all in.",
+        nl: "Zonder testen is het risico groot. Probeer eerst.",
+        es: "Sin probar, es arriesgado. Inténtalo primero.",
+        fr: "Sans tester, c'est risqué. Essaie d'abord.",
+        de: "Ohne Test ist es riskant. Probier es zuerst."
+      }[lang];
+
+    } else if (input.includes("job") || input.includes("werk")) {
+      decision = {
+        en: "Choose growth over comfort",
+        nl: "Kies groei boven comfort",
+        es: "Elige crecimiento sobre comodidad",
+        fr: "Choisis la croissance",
+        de: "Wähle Wachstum"
+      }[lang];
+
+      why = {
+        en: "Comfort keeps you stuck. Growth moves you forward.",
+        nl: "Comfort houdt je vast. Groei brengt je verder.",
+        es: "La comodidad te frena. Crecer te mueve.",
+        fr: "Le confort te bloque. La croissance avance.",
+        de: "Komfort hält dich fest. Wachstum bringt dich weiter."
+      }[lang];
+
+    } else {
+      decision = {
+        en: "Start small and act now",
+        nl: "Begin klein en doe het nu",
+        es: "Empieza pequeño y actúa",
+        fr: "Commence petit et agis",
+        de: "Fang klein an und handle"
+      }[lang];
+
+      why = {
+        en: "Action removes doubt faster than thinking.",
+        nl: "Actie verwijdert twijfel sneller dan nadenken.",
+        es: "Actuar elimina dudas más rápido.",
+        fr: "Agir enlève le doute.",
+        de: "Handeln beseitigt Zweifel."
+      }[lang];
+    }
 
     loading.style.display = "none";
     output.style.display = "block";
 
     output.innerHTML = `
-      <strong>${pick[0]}</strong><br><br>
-      ${pick[1]}
+      <strong>${decision}</strong><br><br>
+      ${why}
     `;
-  }, 800);
+
+  }, 700);
 }
 </script>
 
